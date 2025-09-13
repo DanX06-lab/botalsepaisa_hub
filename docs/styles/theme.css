@@ -1,0 +1,351 @@
+/* Base tokens */
+:root {
+    --bg: #0a1628;
+    --panel: #0f1f2e;
+    --text: #e7ecf6;
+    --muted: #92a0bb;
+    --border: #243453;
+    --accent: #f59e0b;
+
+    /* Extended tokens */
+    --text-inverse: #0f1a2b;
+    --panel-soft: #141f33;
+    --link: #cfe0ff;
+    --link-hover: #ffffff;
+    --success: #2dbd96;
+    --warning: #f5a524;
+    --danger: #e06767;
+    --info: #4ba3ff;
+
+    --radius: 16px;
+
+    /* Opt-in to UA defaults for both schemes */
+    color-scheme: dark light;
+}
+
+/* Light theme overrides (explicit user choice) */
+:root[data-theme="light"] {
+    --bg: #f6f8ff;
+    --panel: #ffffff;
+    --text: #0f1a2b;
+    --muted: #3e4b65;
+    --border: #e2e8f0;
+    --accent: #d17a0b;
+
+    --text-inverse: #e7ecf6;
+    --panel-soft: #eef2fb;
+    --link: #1b4ed0;
+    --link-hover: #0b369f;
+
+    color-scheme: light;
+}
+
+/* Respect system preference if no explicit data-theme */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --bg: #f6f8ff;
+        --panel: #ffffff;
+        --text: #0f1a2b;
+        --muted: #3e4b65;
+        --border: #e2e8f0;
+        --accent: #d17a0b;
+
+        --text-inverse: #e7ecf6;
+        --panel-soft: #eef2fb;
+        --link: #1b4ed0;
+        --link-hover: #0b369f;
+
+        color-scheme: light;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        color-scheme: dark;
+    }
+}
+
+/* Global */
+* {
+    box-sizing: border-box
+}
+
+html,
+body {
+    height: 100%
+}
+
+html,
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Links and nav */
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+/* Ensure nav links keep theme text color across all states */
+.nav a:link {
+    color: var(--text);
+}
+
+.nav a:visited {
+    color: var(--text);
+}
+
+.nav a:hover {
+    color: var(--text);
+    opacity: 1;
+}
+
+.nav a:active {
+    color: var(--text);
+}
+
+/* Cards and panels */
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .35);
+}
+
+/* Info cards (ensures correct heading/body colors in both themes) */
+.info-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, .20);
+    padding: 18px;
+    opacity: 1;
+    /* ensure no inherited dimming */
+}
+
+.info-card h3 {
+    color: var(--accent);
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.info-card p,
+.info-card li,
+.info-card a {
+    color: var(--text);
+    line-height: 1.45;
+}
+
+.info-card a:link,
+.info-card a:visited {
+    color: var(--text);
+}
+
+.info-card a:hover {
+    color: var(--text);
+    opacity: 1;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .18s ease, filter .2s ease, background .25s ease, color .25s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), #d17a0b);
+    color: #111;
+    box-shadow: 0 16px 28px rgba(245, 158, 11, .22);
+}
+
+.btn-primary:hover {
+    filter: saturate(1.05) brightness(1.03);
+    transform: translateY(-1px)
+}
+
+.btn-outline {
+    background: var(--panel-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+    /* fallback if color-mix unsupported */
+    background: color-mix(in oklab, var(--panel-soft), #000 10%);
+    transform: translateY(-1px);
+}
+
+/* Form fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select,
+textarea {
+    width: 100%;
+    display: block;
+    background: var(--panel-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 700;
+    outline: none;
+}
+
+:root[data-theme="light"] input[type="text"],
+:root[data-theme="light"] input[type="email"],
+:root[data-theme="light"] input[type="password"],
+:root[data-theme="light"] input[type="tel"],
+:root[data-theme="light"] select,
+:root[data-theme="light"] textarea {
+    background: #ecf2ff;
+    color: #0e1422;
+    border-color: var(--border);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 65%);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+thead th {
+    color: color-mix(in oklab, var(--text), var(--accent) 35%);
+}
+
+/* Badges & chips */
+.badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .85rem;
+}
+
+.badge.green {
+    background: var(--success);
+    color: #112;
+}
+
+.badge.amber {
+    background: var(--warning);
+    color: #111;
+}
+
+.badge.red {
+    background: var(--danger);
+    color: #fff;
+}
+
+.badge.blue {
+    background: var(--info);
+    color: #0f1a2b;
+}
+
+.chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .85rem;
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+/* Utilities */
+.text-muted {
+    color: var(--muted);
+}
+
+.border {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.panel-soft {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* Theme toggle button */
+.theme-switch {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 800;
+}
+
+.theme-switch[aria-pressed="true"] {
+    outline: 2px solid color-mix(in oklab, var(--accent), transparent 60%);
+}
+
+/* Store cards (list items) */
+.store {
+    background: var(--panel);
+    /* main panel color */
+    border: 1px solid var(--border);
+    /* theme border */
+    color: var(--text);
+    /* ensure text inherits theme */
+}
+
+/* Title, meta, reward inside the card */
+.store h3 {
+    color: var(--text);
+}
+
+.store .muted {
+    color: var(--muted);
+}
+
+.store .reward {
+    color: var(--accent);
+}
+
+/* highlight reward */
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+/* Optional: compact color fallback using light-dark() where supported */
+@supports (color: light-dark(#000, #fff)) {
+    .auto-contrast {
+        color: light-dark(#0f1a2b, #e7ecf6);
+        /* light, dark */
+        background: light-dark(#ffffff, #0f1f2e);
+    }
+}

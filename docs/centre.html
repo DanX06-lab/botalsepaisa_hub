@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Centres | Botalsepaisa</title>
+    <link rel="stylesheet" href="styles/centre.css" />
+    <link rel="preconnect" href="https://{s}.tile.openstreetmap.org">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="styles/theme.css">
+    <script src="js/theme.js" defer></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="brand">
+            <img src="main_logo.jpg" alt="Botalsepaisa" class="logo" />
+            <span>Centres</span>
+        </div>
+        <div class="" spacer">
+            <button class="back-btn" onclick="location.href='index.html'">← Back to Dashboard</button>
+            <button id="theme-toggle" class="theme-switch" aria-pressed="false" aria-label="Toggle theme">
+                Theme
+            </button>
+        </div>
+    </header>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <div class="controls">
+                <input id="search" type="text" placeholder="Search by name, city, or PIN" />
+                <select id="status">
+                    <option value="">All statuses</option>
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+
+            <ul id="store-list" class="store-list" aria-label="Centres list">
+                <!-- Filled by JS -->
+            </ul>
+        </aside>
+
+        <section class="map-wrap">
+            <div id="map" class="map" role="region" aria-label="Centres map"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Demo data — replace with API data
+        const centres = [
+            { id: 1, name: 'Central Collection Center', city: 'Delhi', pin: '110001', status: 'Open', reward: '₹5/bottle', lat: 28.6304, lng: 77.2177 },
+            { id: 2, name: 'East Bottle Depot', city: 'Noida', pin: '201301', status: 'Open', reward: '₹4/bottle', lat: 28.5355, lng: 77.3910 },
+            { id: 3, name: 'Riverside Kiosk', city: 'Gurugram', pin: '122002', status: 'Closed', reward: '₹5/bottle', lat: 28.4595, lng: 77.0266 },
+            { id: 4, name: 'North Recycling Hub', city: 'Delhi', pin: '110054', status: 'Open', reward: '₹6/bottle', lat: 28.7070, lng: 77.2050 },
+            { id: 5, name: 'South Eco Point', city: 'Faridabad', pin: '121001', status: 'Open', reward: '₹4/bottle', lat: 28.4089, lng: 77.3178 }
+        ];
+
+        // Map init (Leaflet)
+        // Quick start docs: Leaflet with OSM tiles and markers [see refs]
+        const map = L.map('map', { zoomControl: true }).setView([28.6, 77.2], 10); // NCR view
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marker store
+        const markerById = new Map();
+
+        // Populate list and markers
+        function renderList(items) {
+            const ul = document.getElementById('store-list');
+            ul.innerHTML = '';
+            markerById.forEach(m => map.removeLayer(m));
+            markerById.clear();
+
+            const bounds = L.latLngBounds();
+
+            items.forEach(c => {
+                // List item
+                const li = document.createElement('li');
+                li.className = 'store';
+                li.setAttribute('data-id', c.id);
+                li.innerHTML = `
+          <div class="store-head">
+            <h3>${c.name}</h3>
+            <span class="badge ${c.status === 'Open' ? 'open' : 'closed'}">${c.status}</span>
+          </div>
+          <p class="muted">${c.city} · ${c.pin}</p>
+          <p class="reward">Reward: ${c.reward}</p>
+          <button class="view-btn" aria-label="View on map">View on Map</button>
+        `;
+                ul.appendChild(li);
+
+                // Marker
+                const marker = L.marker([c.lat, c.lng]).addTo(map);
+                marker.bindPopup(`<strong>${c.name}</strong><br>${c.city} · ${c.pin}<br>${c.reward}<br>Status: ${c.status}`);
+                markerById.set(c.id, marker);
+                bounds.extend([c.lat, c.lng]);
+            });
+
+            if (items.length) {
+                map.fitBounds(bounds.pad(0.2));
+            }
+        }
+
+        // Initial render
+        renderList(centres);
+
+        // List click -> fly to marker
+        document.getElementById('store-list').addEventListener('click', (e) => {
+            const li = e.target.closest('.store');
+            if (!li) return;
+            const id = Number(li.getAttribute('data-id'));
+            const marker = markerById.get(id);
+            if (!marker) return;
+            map.flyTo(marker.getLatLng(), 14, { duration: 0.8 });
+            marker.openPopup();
+            // highlight
+            document.querySelectorAll('.store').forEach(el => el.classList.remove('active'));
+            li.classList.add('active');
+        });
+
+        // Dedicated "View on Map" button
+        document.getElementById('store-list').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('view-btn')) return;
+            e.stopPropagation();
+            const li = e.target.closest('.store');
+            if (!li) return;
+            const id = Number(li.getAttribute('data-id'));
+            const marker = markerById.get(id);
+            if (!marker) return;
+            map.flyTo(marker.getLatLng(), 14, { duration: 0.8 });
+            marker.openPopup();
+        });
+
+        // Simple filter
+        function applyFilter() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const s = document.getElementById('status').value;
+            const filtered = centres.filter(c => {
+                const matchesQ = [c.name, c.city, c.pin].some(v => v.toLowerCase().includes(q));
+                const matchesS = !s || c.status === s;
+                return matchesQ && matchesS;
+            });
+            renderList(filtered);
+        }
+        document.getElementById('search').addEventListener('input', applyFilter);
+        document.getElementById('status').addEventListener('change', applyFilter);
+    </script>
+</body>
+
+</html>

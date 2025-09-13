@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | Botalsepaisa Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles/dashboard.css" />
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="/assets/theme.css">
+    <script src="/assets/theme.js" defer></script>
+
+</head>
+
+<body>
+    <div class="dash">
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="main_logo.jpg" alt="Botalsepaisa" class="logo" />
+                <span class="brand-name">Botalsepaisa Hub</span>
+            </div>
+            <nav class="menu">
+                <a class="item active" href="hub-dashboard.html">Overview</a>
+                <a class="item" href="centre_c.html">Centres</a>
+                <a class="item" href="support.html">Support</a>
+            </nav>
+            <div class="bottom">
+                <a class="item" href="settings.html">Settings</a>
+                <a class="item" href="index.html">Log out</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="title">Hub Dashboard</h1>
+            </header>
+
+            <!-- KPI cards -->
+            <section class="kpis">
+                <div class="card kpi" id="kpi-bottles-today">
+                    <div class="kpi-head">Bottles Collected Today</div>
+                    <div class="kpi-value">0</div>
+                    <div class="kpi-sub">Updated just now</div>
+                </div>
+                <div class="card kpi" id="kpi-pickups">
+                    <div class="kpi-head">Pickup Requests</div>
+                    <div class="kpi-value">0</div>
+                    <div class="kpi-sub"><a href="pickup.html" class="mini-link">Manage</a></div>
+                </div>
+                <div class="card kpi" id="kpi-partners-total">
+                    <div class="kpi-head">Total Delivery Partners</div>
+                    <div class="kpi-value">0</div>
+                    <div class="kpi-sub"><a href="delivery.html" class="mini-link">View all</a></div>
+                </div>
+            </section>
+
+            <!-- Grid: left widgets + right column -->
+            <section class="grid">
+                <!-- Scan QR widget -->
+                <article class="card scan-widget">
+                    <div class="card-head">
+                        <h2>Scan QR</h2>
+                        <span class="hint">Collect and record bottles</span>
+                    </div>
+                    <p class="muted">Open the scanner to capture bottle returns and auto-log quantities.</p>
+                    <a class="btn btn-primary wide" href="qr.html">Open Scanner</a>
+                    <div class="quick-stats">
+                        <div class="qs">
+                            <div class="qs-label">Scans today</div>
+                            <div class="qs-value" id="scans-today">0</div>
+                        </div>
+                        <div class="qs">
+                            <div class="qs-label">Last scan</div>
+                            <div class="qs-value" id="last-scan">—</div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Current Delivery Partners -->
+                <article class="card partners">
+                    <div class="card-head">
+                        <h2>Current Delivery Partners</h2>
+                        <span class="hint">Availability now</span>
+                    </div>
+                    <ul class="partner-list" id="partner-list" aria-label="Current Delivery Partners">
+                        <!-- populated by JS -->
+                    </ul>
+                </article>
+
+                <!-- Pickup Requests -->
+                <article class="card pickups">
+                    <div class="card-head">
+                        <h2>Recent Pickup Requests</h2>
+                        <span class="hint">Vendors awaiting pickup</span>
+                    </div>
+                    <ul class="pickup-list" id="pickup-list" aria-label="Pickup Requests">
+                        <!-- populated by JS -->
+                    </ul>
+                </article>
+
+                <!-- Activity -->
+                <article class="card activity">
+                    <div class="card-head">
+                        <h2>Recent Activity</h2>
+                        <span class="hint">Today</span>
+                    </div>
+                    <ul class="activity-list" id="activity-list" aria-label="Recent Activity">
+                        <!-- populated by JS -->
+                    </ul>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Demo data: replace with API calls
+        const state = {
+            bottlesToday: 126,
+            scansToday: 98,
+            lastScan: '14:42',
+            pickups: [
+                { id: 'PR-1023', vendor: 'GreenMart Sector 12', qty: 240, status: 'Pending' },
+                { id: 'PR-1024', vendor: 'City Refresh Kiosk', qty: 120, status: 'Assigned' },
+            ],
+            partners: [
+                { id: 'DP-01', name: 'Sharma Logistics', online: true, jobs: 3 },
+                { id: 'DP-02', name: 'EcoMove Riders', online: true, jobs: 1 },
+                { id: 'DP-03', name: 'SwiftCourier', online: false, jobs: 0 },
+            ],
+            activity: [
+                { time: '14:42', text: 'Scanned 6 bottles at Central Depot' },
+                { time: '13:58', text: 'Pickup PR-1024 assigned to EcoMove Riders' },
+                { time: '12:10', text: 'Vendor created request PR-1023 (240 bottles)' },
+            ]
+        };
+
+        // Bind KPIs
+        document.getElementById('kpi-bottles-today').querySelector('.kpi-value').textContent = state.bottlesToday.toLocaleString();
+        document.getElementById('kpi-pickups').querySelector('.kpi-value').textContent = state.pickups.length.toString();
+        document.getElementById('kpi-partners-total').querySelector('.kpi-value').textContent = state.partners.length.toString();
+
+        // Scan widget stats
+        document.getElementById('scans-today').textContent = state.scansToday.toString();
+        document.getElementById('last-scan').textContent = state.lastScan;
+
+        // Partners list
+        const pl = document.getElementById('partner-list');
+        state.partners.forEach(p => {
+            const li = document.createElement('li');
+            li.className = 'partner';
+            li.innerHTML = `
+        <span class="dot ${p.online ? 'green' : 'red'}"></span>
+        <div class="meta">
+          <div class="name">${p.name}</div>
+          <div class="sub">Jobs: ${p.jobs}</div>
+        </div>
+        <button class="mini-btn" onclick="alert('Contacting ${p.name}...')">Contact</button>
+      `;
+            pl.appendChild(li);
+        });
+
+        // Pickup list
+        const pk = document.getElementById('pickup-list');
+        state.pickups.forEach(r => {
+            const li = document.createElement('li');
+            li.className = 'pickup';
+            li.innerHTML = `
+        <div class="meta">
+          <div class="name">${r.vendor}</div>
+          <div class="sub">${r.id} • ${r.qty} bottles</div>
+        </div>
+        <span class="badge ${r.status === 'Pending' ? 'amber' : 'green'}">${r.status}</span>
+      `;
+            pk.appendChild(li);
+        });
+
+        // Activity list
+        const al = document.getElementById('activity-list');
+        state.activity.forEach(a => {
+            const li = document.createElement('li');
+            li.className = 'activity-item';
+            li.innerHTML = `<span class="time">${a.time}</span><span class="text">${a.text}</span>`;
+            al.appendChild(li);
+        });
+    </script>
+</body>
+
+</html>

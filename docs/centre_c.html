@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nearest Centre | Botalsepaisa</title>
+    <link rel="stylesheet" href="styles/centre_c.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="/assets/theme.css">
+    <script src="/assets/theme.js" defer></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="brand">
+            <img src="main_logo.jpg" alt="Botalsepaisa" class="logo" />
+            <span>Centres</span>
+        </div>
+        <button class="back-btn" onclick="location.href='dashboard.html'">← Back to Dashboard</button>
+    </header>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <div class="controls">
+                <button id="locate-btn" class="btn">Detect Hub Location</button>
+                <p id="status" class="status" aria-live="polite">Waiting for location…</p>
+            </div>
+
+            <ul id="centre-list" class="list" aria-label="Centres">
+                <!-- Filled by JS -->
+            </ul>
+        </aside>
+
+        <section class="map-wrap">
+            <div id="map" class="map" role="region" aria-label="Centres map"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Demo centres data — replace with API
+        const centres = [
+            { id: 1, name: 'Central Collection Center', city: 'Delhi', pin: '110001', lat: 28.6304, lng: 77.2177, reward: '₹5/bottle' },
+            { id: 2, name: 'East Bottle Depot', city: 'Noida', pin: '201301', lat: 28.5355, lng: 77.3910, reward: '₹4/bottle' },
+            { id: 3, name: 'Riverside Kiosk', city: 'Gurugram', pin: '122002', lat: 28.4595, lng: 77.0266, reward: '₹5/bottle' },
+            { id: 4, name: 'North Recycling Hub', city: 'Delhi', pin: '110054', lat: 28.7070, lng: 77.2050, reward: '₹6/bottle' },
+            { id: 5, name: 'South Eco Point', city: 'Faridabad', pin: '121001', lat: 28.4089, lng: 77.3178, reward: '₹4/bottle' },
+        ];
+
+        // Haversine distance in km
+        function distanceKm(a, b) {
+            const R = 6371;
+            const dLat = (b.lat - a.lat) * Math.PI / 180;
+            const dLng = (b.lng - a.lng) * Math.PI / 180;
+            const lat1 = a.lat * Math.PI / 180;
+            const lat2 = b.lat * Math.PI / 180;
+            const sin = Math.sin;
+            const cos = Math.cos;
+            const c = 2 * Math.atan2(
+                Math.sqrt(sin(dLat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dLng / 2) ** 2),
+                Math.sqrt(1 - (sin(dLat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dLng / 2) ** 2))
+            );
+            return R * c;
+        }
+
+        // Map init
+        const map = L.map('map').setView([28.6, 77.2], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Render centres list and markers
+        const markers = new Map();
+        const list = document.getElementById('centre-list');
+
+        function renderCentres(nearestId = null, userPos = null) {
+            list.innerHTML = '';
+            const bounds = L.latLngBounds();
+
+            centres.forEach(c => {
+                // marker
+                let m = markers.get(c.id);
+                if (!m) {
+                    m = L.marker([c.lat, c.lng]).addTo(map)
+                        .bindPopup(`<strong>${c.name}</strong><br>${c.city} · ${c.pin}<br>${c.reward}`);
+                    markers.set(c.id, m);
+                }
+                bounds.extend([c.lat, c.lng]);
+
+                // list row with distance if userPos known
+                const li = document.createElement('li');
+                li.className = 'row' + (nearestId === c.id ? ' nearest' : '');
+                const dist = userPos ? `${distanceKm(userPos, c).toFixed(2)} km` : '—';
+                li.innerHTML = `
+          <div class="meta">
+            <div class="name">${c.name}</div>
+            <div class="sub">${c.city} · ${c.pin}</div>
+          </div>
+          <div class="right">
+            <div class="reward">${c.reward}</div>
+            <div class="dist">${dist}</div>
+            <button class="mini" data-id="${c.id}">View</button>
+          </div>
+        `;
+                list.appendChild(li);
+            });
+
+            if (userPos) {
+                // user location marker
+                if (!markers.get('you')) {
+                    const you = L.circleMarker([userPos.lat, userPos.lng], { radius: 7, color: '#2dbd96', fillColor: '#2dbd96', fillOpacity: 0.9 }).addTo(map).bindPopup('Hub location');
+                    markers.set('you', you);
+                } else {
+                    markers.get('you').setLatLng([userPos.lat, userPos.lng]);
+                }
+                bounds.extend([userPos.lat, userPos.lng]);
+            }
+
+            map.fitBounds(bounds.pad(0.2));
+        }
+
+        // Initial render without location
+        renderCentres();
+
+        // focus marker when clicking "View"
+        list.addEventListener('click', (e) => {
+            const btn = e.target.closest('button.mini');
+            if (!btn) return;
+            const id = Number(btn.getAttribute('data-id'));
+            const marker = markers.get(id);
+            if (marker) {
+                map.flyTo(marker.getLatLng(), 14, { duration: 0.8 });
+                marker.openPopup();
+            }
+        });
+
+        // Detect location and find nearest
+        const status = document.getElementById('status');
+        const locateBtn = document.getElementById('locate-btn');
+
+        async function detectAndFind() {
+            status.textContent = 'Requesting location…';
+            if (!('geolocation' in navigator)) {
+                status.textContent = 'Geolocation not supported by this browser.';
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    // compute nearest
+                    let nearest = { id: null, d: Infinity };
+                    centres.forEach(c => {
+                        const d = distanceKm(userPos, c);
+                        if (d < nearest.d) { nearest = { id: c.id, d }; }
+                    });
+                    status.textContent = `Nearest centre: #${nearest.id} at ~${nearest.d.toFixed(2)} km`;
+                    renderCentres(nearest.id, userPos);
+                    // focus nearest on map
+                    const marker = markers.get(nearest.id);
+                    if (marker) {
+                        map.flyTo(marker.getLatLng(), 13, { duration: 0.8 });
+                        marker.openPopup();
+                    }
+                },
+                (err) => {
+                    status.textContent = `Location error: ${err.message}`;
+                    // keep list/map without user pin
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+            );
+        }
+
+        locateBtn.addEventListener('click', detectAndFind);
+        // auto-run once on load
+        detectAndFind();
+    </script>
+</body>
+
+</html>

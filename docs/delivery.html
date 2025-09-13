@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delivery Partners | Botalsepaisa Hub</title>
+    <link rel="stylesheet" href="styles/delivery.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet" />
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="/assets/theme.css">
+    <script src="/assets/theme.js" defer></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="brand">
+            <img src="main_logo.jpg" alt="Botalsepaisa" class="logo" />
+            <span>Delivery Partners</span>
+        </div>
+        <button class="back-btn" onclick="location.href='dashboard.html'">← Back to Dashboard</button>
+    </header>
+
+    <main class="container">
+        <section class="summary">
+            <h2>Partners</h2>
+            <span id="total-badge" class="badge total">0</span>
+        </section>
+
+        <section class="filters">
+            <input type="text" id="search" placeholder="Search by name, city, or ID" aria-label="Search partners" />
+            <select id="availability" aria-label="Filter by availability">
+                <option value="">All</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+            </select>
+            <button id="clear">Clear</button>
+        </section>
+
+        <section id="grid" class="grid" aria-label="Delivery partners list">
+            <!-- Cards inserted by JS -->
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+
+    <script>
+        // Demo data — replace with API
+        const partners = [
+            { id: 'DP-01', name: 'Sharma Logistics', city: 'Delhi', online: true, phone: '+91 98765 00001', jobs: 3 },
+            { id: 'DP-02', name: 'EcoMove Riders', city: 'Noida', online: true, phone: '+91 98765 00002', jobs: 1 },
+            { id: 'DP-03', name: 'SwiftCourier', city: 'Gurugram', online: false, phone: '+91 98765 00003', jobs: 0 },
+            { id: 'DP-04', name: 'GreenWheels', city: 'Faridabad', online: true, phone: '+91 98765 00004', jobs: 2 },
+            { id: 'DP-05', name: 'RapidRunners', city: 'Delhi', online: false, phone: '+91 98765 00005', jobs: 0 }
+        ];
+
+        const grid = document.getElementById('grid');
+        const totalBadge = document.getElementById('total-badge');
+
+        function badgeOnline(on) {
+            return `<span class="chip ${on ? 'green' : 'red'}">${on ? 'Online' : 'Offline'}</span>`;
+        }
+
+        function render(list) {
+            grid.innerHTML = '';
+            totalBadge.textContent = list.length.toString();
+            list.forEach(p => {
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.innerHTML = `
+          <div class="head">
+            <h3>${p.name}</h3>
+            ${badgeOnline(p.online)}
+          </div>
+          <div class="meta">
+            <div class="row"><span class="label">ID</span><span class="value">${p.id}</span></div>
+            <div class="row"><span class="label">City</span><span class="value">${p.city}</span></div>
+            <div class="row"><span class="label">Jobs</span><span class="value">${p.jobs}</span></div>
+            <div class="row"><span class="label">Phone</span><a class="value link" href="tel:${p.phone.replace(/\s+/g, '')}">${p.phone}</a></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" data-id="${p.id}">Assign Pickup</button>
+            <button class="btn btn-outline" data-call="${p.phone}">Call</button>
+          </div>
+        `;
+                grid.appendChild(card);
+            });
+        }
+
+        function apply() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const avail = document.getElementById('availability').value;
+            const filtered = partners.filter(p => {
+                const matchesQ = [p.name, p.city, p.id].some(v => v.toLowerCase().includes(q));
+                const matchesA = !avail || (avail === 'online' && p.online) || (avail === 'offline' && !p.online);
+                return matchesQ && matchesA;
+            });
+            render(filtered);
+        }
+
+        document.getElementById('search').addEventListener('input', apply);
+        document.getElementById('availability').addEventListener('change', apply);
+        document.getElementById('clear').addEventListener('click', () => {
+            document.getElementById('search').value = '';
+            document.getElementById('availability').value = '';
+            apply();
+        });
+
+        // Actions
+        grid.addEventListener('click', (e) => {
+            const assign = e.target.closest('[data-id]');
+            const call = e.target.closest('[data-call]');
+            if (assign) {
+                alert('Assigning pickup to ' + assign.getAttribute('data-id'));
+            } else if (call) {
+                const num = call.getAttribute('data-call');
+                location.href = 'tel:' + num.replace(/\s+/g, '');
+            }
+        });
+
+        // Initial render
+        render(partners);
+    </script>
+</body>
+
+</html>

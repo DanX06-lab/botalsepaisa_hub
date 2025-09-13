@@ -1,0 +1,258 @@
+:root {
+    --dark: #0a1628;
+    --panel: #0f1f2e;
+    --mid: #162133;
+    --amber: #f59e0b;
+    --amber-dark: #d17a0b;
+    --text: #e7ecf6;
+    --muted: #9aa6bf;
+    --radius: 16px;
+    --font: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    font-family: var(--font);
+    color: var(--text);
+    background: var(--dark)
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--panel);
+    border-bottom: 1px solid #1a2a46
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 900
+}
+
+.logo {
+    height: 26px;
+    border-radius: 6px
+}
+
+.back-btn {
+    background: transparent;
+    border: 2px solid var(--amber);
+    color: var(--amber);
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .18s ease, background .25s ease
+}
+
+.back-btn:hover {
+    background: var(--amber);
+    color: #12141a;
+    transform: translateY(-1px)
+}
+
+.container {
+    max-width: 1100px;
+    margin: 20px auto 80px;
+    padding: 0 16px
+}
+
+/* Summary header with count badge */
+.summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px
+}
+
+.summary h2 {
+    color: #ffdfa6
+}
+
+.badge.total {
+    background: linear-gradient(135deg, var(--amber), var(--amber-dark));
+    color: #12141a;
+    font-weight: 900;
+    border-radius: 999px;
+    padding: 6px 12px;
+    min-width: 38px;
+    text-align: center
+}
+
+/* Filters */
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 8px 0 14px
+}
+
+.filters input,
+.filters select {
+    background: #ecf2ff;
+    color: #0e1422;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-weight: 700
+}
+
+.filters #clear {
+    background: #1e2b46;
+    color: #dfe7fa;
+    border: 1px solid #2c4066;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-weight: 800;
+    cursor: pointer
+}
+
+.filters #clear:hover {
+    background: #26365a;
+    border-color: #3b5484
+}
+
+/* Grid of partner cards */
+.grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid #243453;
+    border-radius: var(--radius);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .35);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.head h3 {
+    font-size: 1.05rem
+}
+
+.chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .85rem
+}
+
+.chip.green {
+    background: #2dbd96;
+    color: #112
+}
+
+.chip.red {
+    background: #e06767;
+    color: #fff
+}
+
+.meta {
+    display: grid;
+    gap: 8px
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px dashed #243453;
+    padding-bottom: 6px
+}
+
+.row:last-child {
+    border-bottom: none
+}
+
+.label {
+    color: #b9c4da
+}
+
+.value {
+    font-weight: 900
+}
+
+.link {
+    color: #ffd080;
+    text-decoration: none
+}
+
+.link:hover {
+    text-decoration: underline
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto
+}
+
+.btn {
+    display: inline-block;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .18s ease, filter .2s ease, background .25s ease, color .25s ease
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--amber), var(--amber-dark));
+    color: #12141a
+}
+
+.btn-primary:hover {
+    filter: saturate(1.05) brightness(1.03);
+    transform: translateY(-1px)
+}
+
+.btn-outline {
+    background: #1c2942;
+    color: #e8eefb;
+    border: 1px solid #2a3b5d
+}
+
+.btn-outline:hover {
+    background: #243456;
+    border-color: #37507a;
+    transform: translateY(-1px)
+}
+
+/* Responsive */
+@media (max-width:1000px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media (max-width:620px) {
+    .grid {
+        grid-template-columns: 1fr
+    }
+}

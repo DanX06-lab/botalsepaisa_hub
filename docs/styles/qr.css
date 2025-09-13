@@ -1,0 +1,229 @@
+:root {
+    --dark-blue: #0a1628;
+    --panel-bg: #0f1f2e;
+    --accent-amber: #f59e0b;
+    --text-light: #e5e7eb;
+    --text-muted: #7a88a2;
+    --border-radius: 16px;
+    --font-main: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body,
+html {
+    height: 100%;
+    background: var(--dark-blue);
+    color: var(--text-light);
+    font-family: var(--font-main);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.header {
+    background: var(--panel-bg);
+    padding: 1rem 2rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--accent-amber);
+}
+
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.back-dashboard-btn {
+    margin-bottom: 1rem;
+    background: transparent;
+    border: 2px solid var(--accent-amber);
+    color: var(--accent-amber);
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    display: inline-block;
+}
+
+.back-dashboard-btn:hover {
+    background: var(--accent-amber);
+    color: var(--dark-blue);
+}
+
+
+.qr-scanner-section {
+    width: 100%;
+    max-width: 420px;
+    background: var(--panel-bg);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.scanner-frame {
+    width: 100%;
+    padding-top: 100%;
+    /* 1:1 aspect ratio */
+    position: relative;
+    border: 4px dashed var(--accent-amber);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    background: #000;
+    overflow: hidden;
+}
+
+.scanner-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.instructions {
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.manual-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.manual-input label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: left;
+    color: var(--text-light);
+}
+
+.manual-input input {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+.manual-input input:focus {
+    border: 2px solid var(--accent-amber);
+}
+
+#submit-btn {
+    background: var(--accent-amber);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: #121212;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#submit-btn:hover {
+    background: var(--accent-amber-dark);
+}
+
+.scan-status {
+    height: 2rem;
+    font-weight: 600;
+    color: var(--accent-amber);
+    min-height: 2rem;
+}
+
+/* Scan QR container fade-in */
+.qr-scanner-section {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeSlideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Scanner frame pulsing border */
+.scanner-frame {
+    border: 4px dashed var(--accent-amber);
+    border-radius: var(--border-radius);
+    position: relative;
+    overflow: hidden;
+    animation: pulseBorder 2.5s ease-in-out infinite;
+}
+
+/* Placeholder fade-in */
+.scanner-placeholder {
+    animation: fadeIn 1.2s ease forwards;
+}
+
+/* Manual input and button fade-slide from bottom */
+.manual-input,
+#submit-btn {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: fadeSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.7s;
+}
+
+/* Back button hover scale */
+.back-dashboard-btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.footer {
+    padding: 18px 22px;
+    text-align: center;
+    color: #a9b4cc
+}
+
+/* Keyframes */
+@keyframes fadeSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseBorder {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px 0 var(--accent-amber);
+    }
+
+    50% {
+        box-shadow: 0 0 15px 5px var(--accent-amber);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .qr-scanner-section {
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+}

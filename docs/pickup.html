@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pickup Requests | Botalsepaisa</title>
+    <link rel="stylesheet" href="styles/pickup.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet" />
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="/assets/theme.css">
+    <script src="/assets/theme.js" defer></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <h1 class="logo">Botalsepaisa Hub</h1>
+        <button class="back-btn" onclick="location.href='dashboard.html'">← Back to Dashboard</button>
+    </header>
+
+    <main class="container">
+        <h2>Pickup Requests</h2>
+
+        <section class="filters">
+            <input type="text" id="search" placeholder="Search by centre, request ID, or PIN"
+                aria-label="Search pickup requests" />
+            <select id="status" aria-label="Filter by status">
+                <option value="">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Assigned">Assigned</option>
+                <option value="Picked">Picked</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+            <button id="clear">Clear</button>
+        </section>
+
+        <div class="table-wrap">
+            <table id="requests-table" aria-label="Bottle pickup requests">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Centre</th>
+                        <th>Location</th>
+                        <th>Qty (bottles)</th>
+                        <th>Status</th>
+                        <th>Requested</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <!-- JS will populate -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+
+    <script>
+        // Demo data — replace with API results
+        const requests = [
+            { id: 'PR-1023', centre: 'GreenMart Sector 12', pin: '110054', city: 'Delhi', qty: 240, status: 'Pending', time: '2025-09-12 14:05' },
+            { id: 'PR-1024', centre: 'City Refresh Kiosk', pin: '201301', city: 'Noida', qty: 120, status: 'Assigned', time: '2025-09-12 13:40' },
+            { id: 'PR-1025', centre: 'Riverside Kiosk', pin: '122002', city: 'Gurugram', qty: 80, status: 'Picked', time: '2025-09-12 12:10' },
+            { id: 'PR-1026', centre: 'South Eco Point', pin: '121001', city: 'Faridabad', qty: 300, status: 'Pending', time: '2025-09-12 11:50' },
+            { id: 'PR-1027', centre: 'Central Collection Center', pin: '110001', city: 'Delhi', qty: 60, status: 'Rejected', time: '2025-09-11 18:22' },
+        ];
+
+        const tbody = document.getElementById('tbody');
+
+        function badge(status) {
+            const map = { Pending: 'amber', Assigned: 'blue', Picked: 'green', Rejected: 'red' };
+            return `<span class="badge ${map[status] || 'gray'}">${status}</span>`;
+        }
+
+        function render(list) {
+            tbody.innerHTML = '';
+            list.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td data-label="Request ID">${r.id}</td>
+          <td data-label="Centre">${r.centre}</td>
+          <td data-label="Location">${r.city} · ${r.pin}</td>
+          <td data-label="Qty">${r.qty}</td>
+          <td data-label="Status">${badge(r.status)}</td>
+          <td data-label="Requested">${r.time}</td>
+          <td data-label="Action">
+            <button class="mini" data-id="${r.id}">Assign</button>
+          </td>
+        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initial render
+        render(requests);
+
+        // Filters
+        function apply() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const s = document.getElementById('status').value;
+            const filtered = requests.filter(r => {
+                const matchesQ = [r.id, r.centre, r.city, r.pin].some(v => v.toLowerCase().includes(q));
+                const matchesS = !s || r.status === s;
+                return matchesQ && matchesS;
+            });
+            render(filtered);
+        }
+
+        document.getElementById('search').addEventListener('input', apply);
+        document.getElementById('status').addEventListener('change', apply);
+        document.getElementById('clear').addEventListener('click', () => {
+            document.getElementById('search').value = '';
+            document.getElementById('status').value = '';
+            apply();
+        });
+
+        // Row action handler (demo)
+        tbody.addEventListener('click', (e) => {
+            const btn = e.target.closest('button.mini');
+            if (!btn) return;
+            alert('Assigning pickup for ' + btn.getAttribute('data-id'));
+        });
+    </script>
+</body>
+
+</html>

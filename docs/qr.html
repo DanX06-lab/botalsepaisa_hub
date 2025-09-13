@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scan QR Code | Botalsepaisa</title>
+    <link rel="stylesheet" href="styles/qr.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet" />
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
+    <link rel="stylesheet" href="styles/theme.css">
+    <script src="js/theme.js" defer></script>
+
+</head>
+
+<body>
+    <header class="header">
+        <h1 class="logo">Botalsepaisa</h1>
+    </header>
+    <button class="back-dashboard-btn" onclick="location.href='dashboard.html'">← Back to Dashboard</button>
+    <main class="main-container">
+
+        <section class="qr-scanner-section">
+            <div class="scanner-frame" id="scanner-frame">
+                <!-- Camera feed will be injected here by JS or QR library -->
+                <p class="scanner-placeholder">Camera preview will appear here</p>
+            </div>
+
+            <p class="instructions">Position the QR code inside the frame to scan automatically.</p>
+
+            <div class="manual-input">
+                <label for="qr-input">Or enter QR code manually</label>
+                <input type="text" id="qr-input" name="qr-input" placeholder="Enter QR code here" />
+                <button id="submit-btn">Submit</button>
+            </div>
+
+            <div class="scan-status" id="scan-status"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+
+    <script src="scan-qr.js"></script>
+</body>
+
+</html>

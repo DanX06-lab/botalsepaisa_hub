@@ -1,0 +1,379 @@
+:root {
+    --dark: #0a1628;
+    --panel: #0f1f2e;
+    --mid: #162133;
+    --amber: #f59e0b;
+    --amber-dark: #d17a0b;
+    --text: #e7ecf6;
+    --muted: #92a0bb;
+    --radius: 16px;
+    --font: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    font-family: var(--font);
+    color: var(--text);
+    background: var(--dark)
+}
+
+.dash {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh
+}
+
+/* Sidebar */
+.sidebar {
+    background: var(--panel);
+    border-right: 1px solid #1a2a46;
+    display: flex;
+    flex-direction: column
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    font-weight: 900
+}
+
+.logo {
+    height: 28px;
+    border-radius: 6px
+}
+
+.brand-name {
+    color: #ffdfa6
+}
+
+.menu,
+.bottom {
+    display: flex;
+    flex-direction: column;
+    padding: 8px
+}
+
+.item {
+    color: #cdd6ea;
+    text-decoration: none;
+    font-weight: 800;
+    padding: 10px 12px;
+    border-radius: 10px
+}
+
+.item:hover {
+    background: #1a2944;
+    color: #fff
+}
+
+.item.active {
+    background: linear-gradient(135deg, var(--amber), var(--amber-dark));
+    color: #12141a
+}
+
+/* Main */
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.title {
+    font-size: 1.6rem;
+    font-weight: 900
+}
+
+.top-actions {
+    display: flex;
+    gap: 10px
+}
+
+.btn {
+    display: inline-block;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .18s ease, filter .2s ease, background .25s ease, color .25s ease
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--amber), var(--amber-dark));
+    color: #12141a
+}
+
+.btn-primary:hover {
+    filter: saturate(1.05) brightness(1.03);
+    transform: translateY(-1px)
+}
+
+.btn-outline {
+    background: #1c2942;
+    color: #e8eefb;
+    border: 1px solid #2a3b5d
+}
+
+.btn-outline:hover {
+    background: #243456;
+    border-color: #37507a;
+    transform: translateY(-1px)
+}
+
+.mini-link {
+    color: #ffd080;
+    text-decoration: none;
+    font-weight: 800
+}
+
+.mini-link:hover {
+    text-decoration: underline
+}
+
+/* KPIs */
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid #243453;
+    border-radius: var(--radius);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .35);
+    padding: 14px
+}
+
+.kpi .kpi-head {
+    color: #ffdfa6;
+    font-weight: 900
+}
+
+.kpi .kpi-value {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 6px
+}
+
+.kpi .kpi-sub {
+    color: var(--muted);
+    margin-top: 2px
+}
+
+/* Grid widgets */
+.grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-areas:
+        "scan partners"
+        "pickups activity";
+    gap: 14px
+}
+
+.scan-widget {
+    grid-area: scan
+}
+
+.partners {
+    grid-area: partners
+}
+
+.pickups {
+    grid-area: pickups
+}
+
+.activity {
+    grid-area: activity
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px
+}
+
+.card-head h2 {
+    font-size: 1.1rem
+}
+
+.hint {
+    color: var(--muted);
+    font-size: .9rem
+}
+
+.muted {
+    color: var(--muted);
+    margin: 6px 0 10px
+}
+
+.wide {
+    width: 100%;
+    text-align: center
+}
+
+/* Quick stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px
+}
+
+.qs {
+    background: #141f33;
+    border: 1px solid #243453;
+    border-radius: 12px;
+    padding: 10px
+}
+
+.qs-label {
+    color: #b9c4da
+}
+
+.qs-value {
+    font-weight: 900;
+    font-size: 1.2rem
+}
+
+/* Partner list */
+.partner-list,
+.pickup-list,
+.activity-list {
+    list-style: none;
+    display: grid;
+    gap: 10px
+}
+
+.partner,
+.pickup,
+.activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #141f33;
+    border: 1px solid #243453;
+    border-radius: 12px;
+    padding: 10px
+}
+
+.partner .meta,
+.pickup .meta {
+    display: flex;
+    flex-direction: column
+}
+
+.name {
+    font-weight: 900
+}
+
+.sub {
+    color: #b9c4da
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .85rem
+}
+
+.badge.green {
+    background: #2dbd96;
+    color: #112
+}
+
+.badge.amber {
+    background: #f5a524;
+    color: #111
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%
+}
+
+.dot.green {
+    background: #2dbd96
+}
+
+.dot.red {
+    background: #e06767
+}
+
+.mini-btn {
+    background: #1e2b46;
+    color: #dfe7fa;
+    border: 1px solid #2c4066;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-weight: 800;
+    cursor: pointer
+}
+
+.mini-btn:hover {
+    background: #26365a;
+    border-color: #3b5484
+}
+
+/* Activity */
+.activity-item .time {
+    color: #ffdfa6;
+    font-weight: 900;
+    min-width: 56px
+}
+
+.activity-item .text {
+    color: #d7e0f3
+}
+
+/* Responsive */
+@media (max-width:1100px) {
+    .dash {
+        grid-template-columns: 1fr
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 5
+    }
+}
+
+@media (max-width:900px) {
+    .kpis {
+        grid-template-columns: 1fr
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "scan"
+            "partners"
+            "pickups"
+            "activity";
+    }
+}
