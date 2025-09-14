@@ -7,7 +7,7 @@
 
     // API Configuration
     const API_CONFIG = {
-        ngrok: 'https://c7c917092226.ngrok-free.app/api/admin',
+        ngrok: 'https://botalsepaisa-hub-server.onrender.com',
         local: 'http://localhost:6000/api/admin'
     };
     let currentApiBase = null;
@@ -15,7 +15,7 @@
     // Get working API base
     async function getApiBase() {
         if (currentApiBase) return currentApiBase;
-        
+
         try {
             const response = await fetch(`${API_CONFIG.ngrok}/health`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
@@ -27,7 +27,7 @@
         } catch (e) {
             console.log('Ngrok not available, trying localhost...');
         }
-        
+
         try {
             const response = await fetch(`${API_CONFIG.local}/health`);
             if (response.ok) {
@@ -37,7 +37,7 @@
         } catch (e) {
             console.log('Localhost not available');
         }
-        
+
         throw new Error('No API endpoints available');
     }
 
@@ -45,7 +45,7 @@
     function updateStats() {
         const pendingEl = document.getElementById('pending-status');
         const verifiedEl = document.getElementById('verified-status');
-        
+
         if (pendingEl) pendingEl.textContent = stats.pending;
         if (verifiedEl) verifiedEl.textContent = stats.verified;
     }
@@ -72,10 +72,10 @@
                     console.log('Cleanup error (ignored):', e.message);
                 }
             }
-            
+
             html5QrCode = null;
             isScanning = false;
-            
+
             const qrReader = document.getElementById('qr-reader');
             if (qrReader) {
                 const videos = qrReader.querySelectorAll('video');
@@ -89,7 +89,7 @@
                         console.log('Video cleanup error:', e.message);
                     }
                 });
-                
+
                 const canvases = qrReader.querySelectorAll('canvas');
                 canvases.forEach(canvas => {
                     try {
@@ -99,9 +99,9 @@
                     }
                 });
             }
-            
+
             console.log('✅ Clean reset completed');
-            
+
         } catch (error) {
             console.log('Reset error (ignored):', error.message);
         }
@@ -111,10 +111,10 @@
     async function startCamera() {
         try {
             updateStatus('🚀 Starting camera...');
-            
+
             await cleanReset();
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             if (typeof Html5Qrcode === 'undefined') {
                 throw new Error('QR Scanner library not loaded');
             }
@@ -125,7 +125,7 @@
             }
 
             html5QrCode = new Html5Qrcode("qr-reader");
-            
+
             const configs = [
                 { facingMode: "environment" },
                 { facingMode: "user" },
@@ -139,7 +139,7 @@
                         config,
                         { fps: 10, qrbox: 250 },
                         onScanSuccess,
-                        () => {} // Silent errors
+                        () => { } // Silent errors
                     );
                     started = true;
                     console.log('✅ Camera started');
@@ -156,15 +156,15 @@
 
             // Update UI safely
             isScanning = true;
-            
+
             const placeholder = document.getElementById('scanner-placeholder');
             const controls = document.getElementById('scanner-controls');
-            
+
             if (placeholder) placeholder.style.display = 'none';
             if (controls) controls.style.display = 'flex';
-            
+
             updateStatus('🎯 Camera ready! Point at bottle QR code');
-            
+
         } catch (error) {
             console.error('❌ Camera start failed:', error);
             updateStatus(`❌ Camera failed: ${error.message}`);
@@ -177,15 +177,15 @@
         try {
             updateStatus('⏹️ Stopping camera...');
             await cleanReset();
-            
+
             const placeholder = document.getElementById('scanner-placeholder');
             const controls = document.getElementById('scanner-controls');
-            
+
             if (placeholder) placeholder.style.display = 'block';
             if (controls) controls.style.display = 'none';
-            
+
             updateStatus('⏹️ Camera stopped');
-            
+
         } catch (error) {
             console.error('Stop error:', error);
             isScanning = false;
@@ -196,7 +196,7 @@
     // 🎯 NEW WORKFLOW: Smart QR Status Checking
     async function onScanSuccess(qrCode) {
         console.log('🎯 Admin scanned:', qrCode);
-        
+
         // Stop camera when QR detected
         if (isScanning) {
             try {
@@ -208,9 +208,9 @@
                 isScanning = false;
             }
         }
-        
+
         updateStatus('🔍 Checking QR status...');
-        
+
         // Check QR status in database
         try {
             const apiBase = await getApiBase();
@@ -223,12 +223,12 @@
                 },
                 body: JSON.stringify({ qrCode })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 const bottle = result.bottle;
-                
+
                 if (bottle.status === 'pending') {
                     // ✅ ADMIN CAN VERIFY - Show popup
                     updateStatus('✅ Pending bottle found!');
@@ -241,7 +241,7 @@
                     restartCameraAfterDelay();
                 } else if (bottle.status === 'rejected') {
                     // ❌ ALREADY REJECTED
-                    updateStatus('❌ Already rejected'); 
+                    updateStatus('❌ Already rejected');
                     const rejectedDate = new Date(bottle.rejectedAt).toLocaleDateString('en-IN');
                     const reason = bottle.rejectionReason || 'No reason provided';
                     showMessage('❌ Already Rejected', `This bottle was rejected on ${rejectedDate}.\nReason: ${reason}`);
@@ -253,7 +253,7 @@
                 showMessage('❌ QR Not Scanned Yet', 'This QR code has not been scanned by any user yet. The user must scan it first to create a verification request.');
                 restartCameraAfterDelay();
             }
-            
+
         } catch (error) {
             console.error('QR status check error:', error);
             updateStatus('❌ Error checking QR');
@@ -278,7 +278,7 @@
     // 🧴 UPDATED Bottle confirmation popup with bottle info
     function showBottleConfirmationPopup(qrCode, bottle) {
         updateStatus('🧴 Confirming bottle receipt...');
-        
+
         const popup = document.createElement('div');
         popup.id = 'bottle-confirmation-popup';
         popup.style.cssText = `
@@ -297,7 +297,7 @@
 
         const displayQR = qrCode.length > 30 ? qrCode.substring(0, 30) + '...' : qrCode;
         const rewardText = bottle.rewardText || `₹${bottle.reward}`;
-        
+
         popup.innerHTML = `
             <div style="
                 background: #0f1f2e;
@@ -359,14 +359,14 @@
         // Button events
         const approveBtn = document.getElementById('approve-btn');
         const rejectBtn = document.getElementById('reject-btn');
-        
+
         if (approveBtn) {
             approveBtn.onclick = () => {
                 removePopup();
                 approveBottle(qrCode);
             };
         }
-        
+
         if (rejectBtn) {
             rejectBtn.onclick = () => {
                 removePopup();
@@ -386,7 +386,7 @@
     async function approveBottle(qrCode) {
         try {
             updateStatus('✅ Processing approval...');
-            
+
             const apiBase = await getApiBase();
             const response = await fetch(`${apiBase}/approve-bottle`, {
                 method: 'POST',
@@ -397,27 +397,27 @@
                 },
                 body: JSON.stringify({ qrCode, adminId: 'admin1' })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 stats.verified++;
                 stats.pending = Math.max(0, stats.pending - 1);
                 updateStats();
                 addRecentScan(qrCode, 'approved');
                 updateStatus(`🎉 Approved! ${result.bottle.rewardText} sent to user`);
-                
+
                 console.log('✅ Bottle approved successfully:', result);
             } else {
                 throw new Error(result.message || 'Approval failed');
             }
-            
+
         } catch (error) {
             console.error('Approval error:', error);
             updateStatus('❌ Approval failed');
             showMessage('❌ Approval Error', error.message || 'Failed to approve bottle. Please try again.');
         }
-        
+
         // Restart camera after processing
         setTimeout(() => {
             updateStatus('🔄 Restarting camera...');
@@ -429,7 +429,7 @@
     async function rejectBottle(qrCode) {
         try {
             updateStatus('❌ Processing rejection...');
-            
+
             const apiBase = await getApiBase();
             const response = await fetch(`${apiBase}/reject-bottle`, {
                 method: 'POST',
@@ -438,32 +438,32 @@
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
                 },
-                body: JSON.stringify({ 
-                    qrCode, 
+                body: JSON.stringify({
+                    qrCode,
                     adminId: 'admin1',
                     reason: 'Physical bottle not received'
                 })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 stats.pending = Math.max(0, stats.pending - 1);
                 updateStats();
                 addRecentScan(qrCode, 'rejected');
                 updateStatus('❌ Request rejected');
-                
+
                 console.log('❌ Bottle rejected successfully:', result);
             } else {
                 throw new Error(result.message || 'Rejection failed');
             }
-            
+
         } catch (error) {
             console.error('Rejection error:', error);
             updateStatus('❌ Rejection failed');
             showMessage('❌ Rejection Error', error.message || 'Failed to reject bottle. Please try again.');
         }
-        
+
         // Restart camera after processing
         setTimeout(() => {
             updateStatus('🔄 Restarting camera...');
@@ -475,7 +475,7 @@
     function addRecentScan(qrCode, status) {
         const recentDiv = document.getElementById('recent-scans');
         if (!recentDiv) return;
-        
+
         if (recentDiv.textContent.includes('Recent QR')) {
             recentDiv.innerHTML = '';
         }
@@ -487,9 +487,9 @@
             <span class="recent-status ${status}">${status === 'approved' ? '✅ Approved' : '❌ Rejected'}</span>
             <span class="recent-time">${new Date().toLocaleTimeString('en-IN', { hour12: true })}</span>
         `;
-        
+
         recentDiv.insertBefore(item, recentDiv.firstChild);
-        
+
         while (recentDiv.children.length > 5) {
             recentDiv.removeChild(recentDiv.lastChild);
         }
@@ -500,11 +500,11 @@
         const cameraBtn = document.getElementById('camera-mode-btn');
         const uploadBtn = document.getElementById('upload-mode-btn');
         const uploadSection = document.getElementById('upload-section');
-        
+
         if (cameraBtn) cameraBtn.classList.add('active');
         if (uploadBtn) uploadBtn.classList.remove('active');
         if (uploadSection) uploadSection.style.display = 'none';
-        
+
         if (!isScanning) {
             startCamera();
         }
@@ -514,15 +514,15 @@
         const cameraBtn = document.getElementById('camera-mode-btn');
         const uploadBtn = document.getElementById('upload-mode-btn');
         const uploadSection = document.getElementById('upload-section');
-        
+
         if (uploadBtn) uploadBtn.classList.add('active');
         if (cameraBtn) cameraBtn.classList.remove('active');
         if (uploadSection) uploadSection.style.display = 'block';
-        
+
         if (isScanning) {
             stopCamera();
         }
-        
+
         updateStatus('📁 Select QR image file');
     }
 
@@ -530,15 +530,15 @@
     async function scanFile(file) {
         try {
             updateStatus('🔍 Scanning image...');
-            
+
             const tempScanner = new Html5Qrcode("qr-reader");
             const result = await tempScanner.scanFile(file, true);
-            
+
             updateStatus('✅ QR found in image!');
-            
+
             // Use same workflow for file scans
             onScanSuccess(result);
-            
+
         } catch (error) {
             updateStatus('❌ No QR code found in image');
         }
@@ -549,16 +549,16 @@
         const cameraBtn = document.getElementById('camera-mode-btn');
         const uploadBtn = document.getElementById('upload-mode-btn');
         const stopBtn = document.getElementById('stop-camera');
-        
+
         if (cameraBtn) cameraBtn.onclick = switchToCamera;
         if (uploadBtn) uploadBtn.onclick = switchToUpload;
         if (stopBtn) stopBtn.onclick = stopCamera;
-        
+
         const fileInput = document.getElementById('qr-file-input');
         const fileInfo = document.getElementById('file-info');
         const fileName = document.getElementById('file-name');
         const scanBtn = document.getElementById('scan-file-btn');
-        
+
         if (fileInput) {
             fileInput.onchange = (e) => {
                 if (e.target.files[0] && fileName && fileInfo) {
@@ -568,7 +568,7 @@
                 }
             };
         }
-        
+
         if (scanBtn) {
             scanBtn.onclick = () => {
                 if (fileInput && fileInput.files[0]) {
@@ -581,22 +581,22 @@
     // Initialize
     function init() {
         console.log('🚀 Initializing Smart Admin Scanner with New Workflow...');
-        
+
         updateStats();
         setupEvents();
-        
+
         // Auto start camera
         setTimeout(() => {
             startCamera();
         }, 1000);
-        
+
         console.log('✅ Smart Admin Scanner ready!');
     }
 
     // Cleanup
     window.addEventListener('beforeunload', () => {
         if (html5QrCode && isScanning) {
-            html5QrCode.stop().catch(() => {});
+            html5QrCode.stop().catch(() => { });
         }
     });
 

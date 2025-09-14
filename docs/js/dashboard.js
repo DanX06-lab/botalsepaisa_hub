@@ -1,20 +1,20 @@
 (() => {
     console.log('📊 Real-Time Dashboard Loading...');
-    
+
     // API Configuration
     const API_CONFIG = {
-        ngrok: 'https://c7c917092226.ngrok-free.app/api/admin',
+        ngrok: 'https://botalsepaisa-hub-server.onrender.com',
         local: 'http://localhost:6000/api/admin'
     };
-    
+
     let currentApiBase = null;
     let isRealTimeMode = false;
     let refreshInterval = null;
-    
+
     // Get working API base
     async function getApiBase() {
         if (currentApiBase) return currentApiBase;
-        
+
         try {
             // Test ngrok first
             const response = await fetch(`${API_CONFIG.ngrok}/health`, {
@@ -29,7 +29,7 @@
         } catch (e) {
             console.log('⚠️ Ngrok not available, trying localhost...');
         }
-        
+
         try {
             // Test localhost
             const response = await fetch(`${API_CONFIG.local}/health`);
@@ -41,7 +41,7 @@
         } catch (e) {
             console.log('⚠️ Localhost not available');
         }
-        
+
         throw new Error('No API endpoints available');
     }
 
@@ -49,11 +49,11 @@
     async function testAPIConnection() {
         try {
             console.log('🔄 Testing API connection...');
-            
+
             const apiBase = await getApiBase();
             const response = await fetch(`${apiBase}/health`);
             const result = await response.json();
-            
+
             if (response.ok && result.success) {
                 console.log('✅ API Connected:', result);
                 isRealTimeMode = true;
@@ -71,18 +71,18 @@
     // Real-time dashboard with MongoDB data
     async function initRealTimeDashboard() {
         console.log('🚀 Starting real-time dashboard...');
-        
+
         try {
             await fetchAndUpdateDashboard();
-            
+
             // Setup auto-refresh every 15 seconds
             refreshInterval = setInterval(fetchAndUpdateDashboard, 15000);
-            
+
             // Add connection status indicator
             updateConnectionStatus('connected');
-            
+
             console.log('✅ Real-time dashboard active');
-            
+
         } catch (error) {
             console.error('❌ Real-time dashboard failed:', error);
             initDemoMode();
@@ -101,34 +101,34 @@
             });
 
             const result = await response.json();
-            
+
             if (response.ok && result.success) {
                 const data = result.data;
-                
+
                 // Update main KPIs
                 updateElement('kpi-bottles-today .kpi-value', data.approvedToday || 0);
                 updateElement('kpi-pickups .kpi-value', data.pendingRequests || 0);
                 updateElement('kpi-partners-total .kpi-value', data.totalUsers || 0);
-                
+
                 // Update quick stats
                 updateElement('scans-today', data.approvedToday || 0);
                 updateElement('last-scan', `Updated: ${data.lastUpdated}`);
-                
+
                 // Update revenue (if you have this element)
                 updateElement('revenue-today', `₹${data.totalRevenueToday || 0}`);
-                
+
                 // Update activity feed
                 updateActivityFeed(data.recentActivity || []);
-                
+
                 // Update pickup list with pending bottles
                 updatePickupList(data.pendingRequests || 0);
-                
+
                 console.log('🔄 Dashboard updated with real data:', data);
-                
+
             } else {
                 throw new Error('API response failed');
             }
-            
+
         } catch (error) {
             console.error('❌ Dashboard update failed:', error);
             updateConnectionStatus('error');
@@ -139,7 +139,7 @@
     function updateActivityFeed(activities) {
         const activityList = document.getElementById('activity-list');
         if (!activityList) return;
-        
+
         if (activities.length === 0) {
             activityList.innerHTML = `
                 <li class="activity-item">
@@ -149,7 +149,7 @@
             `;
             return;
         }
-        
+
         const activityHTML = activities.map(activity => {
             const typeClass = activity.type === 'approved' ? 'success' : 'warning';
             return `
@@ -159,7 +159,7 @@
                 </li>
             `;
         }).join('');
-        
+
         activityList.innerHTML = activityHTML;
     }
 
@@ -167,7 +167,7 @@
     function updatePickupList(pendingCount) {
         const pickupList = document.getElementById('pickup-list');
         if (!pickupList) return;
-        
+
         if (pendingCount === 0) {
             pickupList.innerHTML = `
                 <li class="pickup">
@@ -179,7 +179,7 @@
                 </li>
             `;
         } else {
-            const pickupHTML = Array.from({length: Math.min(pendingCount, 5)}, (_, i) => `
+            const pickupHTML = Array.from({ length: Math.min(pendingCount, 5) }, (_, i) => `
                 <li class="pickup">
                     <div class="meta">
                         <div class="name">Bottle Verification #${i + 1}</div>
@@ -188,7 +188,7 @@
                     <span class="badge amber">Pending</span>
                 </li>
             `).join('');
-            
+
             pickupList.innerHTML = pickupHTML;
         }
     }
@@ -197,8 +197,8 @@
     function updateConnectionStatus(status) {
         let statusText = '';
         let statusClass = '';
-        
-        switch(status) {
+
+        switch (status) {
             case 'connected':
                 statusText = '🟢 Real-time data active';
                 statusClass = 'connected';
@@ -212,31 +212,31 @@
                 statusClass = 'demo';
                 break;
         }
-        
+
         // Update status indicator if it exists
         const statusIndicator = document.getElementById('connection-status');
         if (statusIndicator) {
             statusIndicator.textContent = statusText;
             statusIndicator.className = `connection-status ${statusClass}`;
         }
-        
+
         // Update page title to show mode
-        document.title = isRealTimeMode ? 
-            'Admin Dashboard | Botalsepaisa (Live)' : 
+        document.title = isRealTimeMode ?
+            'Admin Dashboard | Botalsepaisa (Live)' :
             'Admin Dashboard | Botalsepaisa (Demo)';
     }
 
     // Demo mode fallback
     function initDemoMode() {
         console.log('📊 Loading demo dashboard...');
-        
+
         const demoData = {
             approvedToday: 126,
             pendingRequests: 5,
             totalUsers: 45,
             totalRevenueToday: 126,
-            lastUpdated: new Date().toLocaleTimeString('en-IN', { 
-                hour: '2-digit', 
+            lastUpdated: new Date().toLocaleTimeString('en-IN', {
+                hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit'
             })
@@ -252,7 +252,7 @@
 
         loadDemoContent();
         updateConnectionStatus('demo');
-        
+
         console.log('✅ Demo dashboard loaded');
     }
 
@@ -264,15 +264,15 @@
             const now = new Date();
             activityList.innerHTML = `
                 <li class="activity-item success">
-                    <span class="time">${new Date(now - 2*60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span class="time">${new Date(now - 2 * 60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                     <span class="text">Demo: Approved bottle ABC123... (+₹1.00)</span>
                 </li>
                 <li class="activity-item success">
-                    <span class="time">${new Date(now - 5*60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span class="time">${new Date(now - 5 * 60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                     <span class="text">Demo: Approved bottle DEF456... (+₹1.00)</span>
                 </li>
                 <li class="activity-item warning">
-                    <span class="time">${new Date(now - 10*60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span class="time">${new Date(now - 10 * 60000).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                     <span class="text">Demo: Rejected bottle XYZ789...</span>
                 </li>
             `;
@@ -300,10 +300,10 @@
     // Helper function to safely update elements
     function updateElement(selector, value) {
         try {
-            const element = document.querySelector(`#${selector}`) || 
-                          document.querySelector(`.${selector}`) ||
-                          document.getElementById(selector);
-            
+            const element = document.querySelector(`#${selector}`) ||
+                document.querySelector(`.${selector}`) ||
+                document.getElementById(selector);
+
             if (element) {
                 element.textContent = value;
             }
@@ -325,7 +325,7 @@
     // Initialize dashboard
     async function init() {
         console.log('📊 Initializing Dashboard...');
-        
+
         // Wait for DOM
         if (document.readyState === 'loading') {
             await new Promise(resolve => {
@@ -335,7 +335,7 @@
 
         // Test API and load appropriate mode
         await testAPIConnection();
-        
+
         console.log('✅ Dashboard initialization complete');
     }
 
