@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bottle Verification History | Botalsepaisa Admin</title>
+    <link rel="stylesheet" href="styles/return_history.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                📊 Bottle Verification History
+            </h1>
+            <p>Complete audit trail of all bottle verifications with detailed analytics</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="status-filter">Filter by Status</label>
+                <select id="status-filter">
+                    <option value="">All Statuses</option>
+                    <option value="completed">✅ Completed</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="rejected">❌ Rejected</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="user-filter">Filter by User ID</label>
+                <input type="text" id="user-filter" placeholder="Enter user ID...">
+            </div>
+
+            <div class="control-group">
+                <label for="qr-search">Search QR Code</label>
+                <input type="text" id="qr-search" placeholder="Enter QR code...">
+            </div>
+
+            <div class="control-group">
+                <button class="btn" onclick="applyFilters()">
+                    🔍 Apply Filters
+                </button>
+            </div>
+
+            <div class="control-group">
+                <button class="btn secondary" onclick="exportData()">
+                    📥 Export CSV
+                </button>
+            </div>
+
+            <div class="control-group">
+                <button class="btn secondary" onclick="location.href='dashboard.html'">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value" id="total-bottles">0</span>
+                <span class="stat-label">Total Bottles</span>
+            </div>
+            <div class="stat-card success">
+                <span class="stat-value" id="completed-bottles">0</span>
+                <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-card warning">
+                <span class="stat-value" id="pending-bottles">0</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-card error">
+                <span class="stat-value" id="rejected-bottles">0</span>
+                <span class="stat-label">Rejected</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value" id="total-revenue">₹0</span>
+                <span class="stat-label">Total Revenue</span>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="history-table">
+            <div class="table-header">
+                <h2>📋 Verification Records</h2>
+                <span id="record-count">Loading...</span>
+            </div>
+
+            <div class="table-container">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>QR Code</th>
+                            <th>User ID</th>
+                            <th>Status</th>
+                            <th>Reward</th>
+                            <th>Scanned At</th>
+                            <th>Processed At</th>
+                            <th>Processing Time</th>
+                            <th>Admin</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <!-- Loading state -->
+                        <tr>
+                            <td colspan="9" class="loading">
+                                <div class="loading-spinner"></div>
+                                Loading verification history...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button id="prev-btn" onclick="previousPage()" disabled>← Previous</button>
+                <span class="current-page" id="page-info">Page 1 of 1</span>
+                <button id="next-btn" onclick="nextPage()" disabled>Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/return_history.js"></script>
+</body>
+</html>

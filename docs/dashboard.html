@@ -112,78 +112,10 @@
             </section>
         </main>
     </div>
-
-    <script>
-        // Demo data: replace with API calls
-        const state = {
-            bottlesToday: 126,
-            scansToday: 98,
-            lastScan: '14:42',
-            pickups: [
-                { id: 'PR-1023', vendor: 'GreenMart Sector 12', qty: 240, status: 'Pending' },
-                { id: 'PR-1024', vendor: 'City Refresh Kiosk', qty: 120, status: 'Assigned' },
-            ],
-            partners: [
-                { id: 'DP-01', name: 'Sharma Logistics', online: true, jobs: 3 },
-                { id: 'DP-02', name: 'EcoMove Riders', online: true, jobs: 1 },
-                { id: 'DP-03', name: 'SwiftCourier', online: false, jobs: 0 },
-            ],
-            activity: [
-                { time: '14:42', text: 'Scanned 6 bottles at Central Depot' },
-                { time: '13:58', text: 'Pickup PR-1024 assigned to EcoMove Riders' },
-                { time: '12:10', text: 'Vendor created request PR-1023 (240 bottles)' },
-            ]
-        };
-
-        // Bind KPIs
-        document.getElementById('kpi-bottles-today').querySelector('.kpi-value').textContent = state.bottlesToday.toLocaleString();
-        document.getElementById('kpi-pickups').querySelector('.kpi-value').textContent = state.pickups.length.toString();
-        document.getElementById('kpi-partners-total').querySelector('.kpi-value').textContent = state.partners.length.toString();
-
-        // Scan widget stats
-        document.getElementById('scans-today').textContent = state.scansToday.toString();
-        document.getElementById('last-scan').textContent = state.lastScan;
-
-        // Partners list
-        const pl = document.getElementById('partner-list');
-        state.partners.forEach(p => {
-            const li = document.createElement('li');
-            li.className = 'partner';
-            li.innerHTML = `
-        <span class="dot ${p.online ? 'green' : 'red'}"></span>
-        <div class="meta">
-          <div class="name">${p.name}</div>
-          <div class="sub">Jobs: ${p.jobs}</div>
-        </div>
-        <button class="mini-btn" onclick="alert('Contacting ${p.name}...')">Contact</button>
-      `;
-            pl.appendChild(li);
-        });
-
-        // Pickup list
-        const pk = document.getElementById('pickup-list');
-        state.pickups.forEach(r => {
-            const li = document.createElement('li');
-            li.className = 'pickup';
-            li.innerHTML = `
-        <div class="meta">
-          <div class="name">${r.vendor}</div>
-          <div class="sub">${r.id} • ${r.qty} bottles</div>
-        </div>
-        <span class="badge ${r.status === 'Pending' ? 'amber' : 'green'}">${r.status}</span>
-      `;
-            pk.appendChild(li);
-        });
-
-        // Activity list
-        const al = document.getElementById('activity-list');
-        state.activity.forEach(a => {
-            const li = document.createElement('li');
-            li.className = 'activity-item';
-            li.innerHTML = `<span class="time">${a.time}</span><span class="text">${a.text}</span>`;
-            al.appendChild(li);
-        });
-    </script>
+    <footer class="footer">
+        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
+    </footer>
+    <script src="js/dashboard.js"></script>
 </body>
 
 </html>
