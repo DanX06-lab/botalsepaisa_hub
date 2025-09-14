@@ -7,10 +7,6 @@
     <title>Dashboard | Botalsepaisa Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles/dashboard.css" />
-    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();</script>
-    <link rel="stylesheet" href="/assets/theme.css">
-    <script src="/assets/theme.js" defer></script>
-
 </head>
 
 <body>
@@ -21,100 +17,160 @@
                 <span class="brand-name">Botalsepaisa Hub</span>
             </div>
             <nav class="menu">
-                <a class="item active" href="hub-dashboard.html">Overview</a>
-                <a class="item" href="centre_c.html">Centres</a>
-                <a class="item" href="support.html">Support</a>
+                <a class="item active" href="dashboard.html">
+                    <span class="item-icon">📊</span>
+                    <span class="item-text">Overview</span>
+                </a>
+                <a class="item" href="qr.html">
+                    <span class="item-icon">🔍</span>
+                    <span class="item-text">QR Scanner</span>
+                </a>
+                <a class="item" href="return_history.html">
+                    <span class="item-icon">📋</span>
+                    <span class="item-text">History</span>
+                </a>
+                <a class="item" href="centre_c.html">
+                    <span class="item-icon">🏢</span>
+                    <span class="item-text">Centres</span>
+                </a>
+                <a class="item" href="pickup.html">
+                    <span class="item-icon">⏳</span>
+                    <span class="item-text">Pending Requests</span>
+                </a>
+                <a class="item" href="support.html">
+                    <span class="item-icon">💬</span>
+                    <span class="item-text">Support</span>
+                </a>
             </nav>
             <div class="bottom">
-                <a class="item" href="settings.html">Settings</a>
-                <a class="item" href="index.html">Log out</a>
+                <a class="item" href="settings.html">
+                    <span class="item-icon">⚙️</span>
+                    <span class="item-text">Settings</span>
+                </a>
+                <a class="item logout" href="index.html">
+                    <span class="item-icon">🚪</span>
+                    <span class="item-text">Log out</span>
+                </a>
             </div>
         </aside>
 
         <main class="main">
             <header class="topbar">
                 <h1 class="title">Hub Dashboard</h1>
+                <div class="topbar-actions">
+                    <span id="last-updated" class="last-updated">Loading...</span>
+                    <button id="refresh-btn" class="refresh-btn">🔄</button>
+                </div>
             </header>
 
             <!-- KPI cards -->
             <section class="kpis">
                 <div class="card kpi" id="kpi-bottles-today">
-                    <div class="kpi-head">Bottles Collected Today</div>
-                    <div class="kpi-value">0</div>
-                    <div class="kpi-sub">Updated just now</div>
+                    <div class="kpi-head">Bottles Verified Today</div>
+                    <div class="kpi-value" id="bottles-today">0</div>
+                    <div class="kpi-sub">Updated <span id="bottles-time">just now</span></div>
                 </div>
                 <div class="card kpi" id="kpi-pickups">
-                    <div class="kpi-head">Pickup Requests</div>
-                    <div class="kpi-value">0</div>
-                    <div class="kpi-sub"><a href="pickup.html" class="mini-link">Manage</a></div>
+                    <div class="kpi-head">Pending Verifications</div>
+                    <div class="kpi-value" id="pending-count">0</div>
+                    <div class="kpi-sub"><a href="pickup.html" class="mini-link">View All</a></div>
                 </div>
                 <div class="card kpi" id="kpi-partners-total">
-                    <div class="kpi-head">Total Delivery Partners</div>
-                    <div class="kpi-value">0</div>
-                    <div class="kpi-sub"><a href="delivery.html" class="mini-link">View all</a></div>
+                    <div class="kpi-head">Total Users</div>
+                    <div class="kpi-value" id="total-users">0</div>
+                    <div class="kpi-sub">Registered users</div>
+                </div>
+                <div class="card kpi" id="kpi-history">
+                    <div class="kpi-head">Total Records</div>
+                    <div class="kpi-value" id="total-records">0</div>
+                    <div class="kpi-sub"><a href="return_history.html" class="mini-link">View History</a></div>
                 </div>
             </section>
 
             <!-- Grid: left widgets + right column -->
             <section class="grid">
-                <!-- Scan QR widget -->
-                <article class="card scan-widget">
+                <!-- Admin QR Verification -->
+                <article class="card scan-widget admin-widget">
                     <div class="card-head">
-                        <h2>Scan QR</h2>
-                        <span class="hint">Collect and record bottles</span>
+                        <h2>🔍 Verify Bottles</h2>
+                        <span class="hint">Admin verification system</span>
                     </div>
-                    <p class="muted">Open the scanner to capture bottle returns and auto-log quantities.</p>
-                    <a class="btn btn-primary wide" href="qr.html">Open Scanner</a>
+                    <p class="muted">Scan user bottle QRs to verify and approve payments instantly.</p>
+                    <a class="btn btn-primary wide" href="qr.html">🚀 Open Admin Scanner</a>
                     <div class="quick-stats">
                         <div class="qs">
-                            <div class="qs-label">Scans today</div>
-                            <div class="qs-value" id="scans-today">0</div>
+                            <div class="qs-label">Verified today</div>
+                            <div class="qs-value" id="verified-today">0</div>
                         </div>
                         <div class="qs">
-                            <div class="qs-label">Last scan</div>
-                            <div class="qs-value" id="last-scan">—</div>
+                            <div class="qs-label">Pending now</div>
+                            <div class="qs-value" id="pending-now">0</div>
                         </div>
                     </div>
                 </article>
 
-                <!-- Current Delivery Partners -->
-                <article class="card partners">
+                <!-- History Quick Access -->
+                <article class="card history-widget">
                     <div class="card-head">
-                        <h2>Current Delivery Partners</h2>
-                        <span class="hint">Availability now</span>
+                        <h2>📋 Verification History</h2>
+                        <span class="hint">Complete audit trail</span>
                     </div>
-                    <ul class="partner-list" id="partner-list" aria-label="Current Delivery Partners">
-                        <!-- populated by JS -->
+                    <p class="muted">View detailed history of all bottle verifications with analytics.</p>
+                    <a class="btn btn-secondary wide" href="return_history.html">📊 View Full History</a>
+                    <div class="quick-stats">
+                        <div class="qs">
+                            <div class="qs-label">Total processed</div>
+                            <div class="qs-value" id="total-processed">0</div>
+                        </div>
+                        <div class="qs">
+                            <div class="qs-label">Success rate</div>
+                            <div class="qs-value" id="success-rate">0%</div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Recent Verifications -->
+                <article class="card verifications">
+                    <div class="card-head">
+                        <h2>Recent Verifications</h2>
+                        <span class="hint">Latest approvals</span>
+                    </div>
+                    <ul class="verification-list" id="verification-list">
+                        <li class="loading">Loading verifications...</li>
                     </ul>
                 </article>
 
-                <!-- Pickup Requests -->
+                <!-- Pending Requests -->
                 <article class="card pickups">
                     <div class="card-head">
-                        <h2>Recent Pickup Requests</h2>
-                        <span class="hint">Vendors awaiting pickup</span>
+                        <h2>Pending Requests</h2>
+                        <span class="hint">Awaiting verification</span>
                     </div>
-                    <ul class="pickup-list" id="pickup-list" aria-label="Pickup Requests">
-                        <!-- populated by JS -->
+                    <ul class="pickup-list" id="pickup-list">
+                        <li class="loading">Loading pending requests...</li>
                     </ul>
                 </article>
 
-                <!-- Activity -->
+                <!-- Live Activity Feed -->
                 <article class="card activity">
                     <div class="card-head">
-                        <h2>Recent Activity</h2>
-                        <span class="hint">Today</span>
+                        <h2>Live Activity</h2>
+                        <span class="hint">Real-time updates</span>
                     </div>
-                    <ul class="activity-list" id="activity-list" aria-label="Recent Activity">
-                        <!-- populated by JS -->
+                    <ul class="activity-list" id="activity-list">
+                        <li class="loading">Loading activity...</li>
                     </ul>
                 </article>
             </section>
         </main>
     </div>
-    <footer class="footer">
-        <p>© 2025 Botalsepaisa · Transforming waste into wealth</p>
-    </footer>
+
+    <!-- Real-time Status Indicator -->
+    <div class="status-indicator" id="status-indicator">
+        <div class="status-dot"></div>
+        <span class="status-text">Connected</span>
+    </div>
+
     <script src="js/dashboard.js"></script>
 </body>
 
